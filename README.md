@@ -93,6 +93,12 @@ $$
 
 Em que os dois primeiros dígitos de **x** em hexadecimal serão atribuído a `TimerHigh` e os dois últimos dígitos atribuídos a `TimerLow`, com o período do cronômetro como variável da equação.
 
+#### Explicação dos Termos
+
+- **65536**: Um valor constante usado na fórmula, que representa o valor máximo para um contador de 16 bits.
+- **tempo em us**: O tempo em microsegundos.
+- **0,5 \* 32**: Uma constante de divisor para ajustar a unidade do tempo de acordo com a equação.
+
 ---
 
 #### Cálculo para 1 segundo (1000000 us)
@@ -140,13 +146,6 @@ $$
 Portanto, `TimerHigh` será equivalente a `C2` e `TimerLow` será atribuído `F7`.
 
 ---
-
-## Explicação dos Termos
-
-- **65536**: Um valor constante usado na fórmula, que representa o valor máximo para um contador de 16 bits.
-- **tempo em us**: O tempo em microsegundos.
-- **0,5 \* 32**: Uma constante de divisor para ajustar a unidade do tempo de acordo com a equação.
-
 
 ```C
 void INTERRUPT_HIGH() iv 0x0008 ics ICS_AUTO {
