@@ -97,55 +97,46 @@ Em que os dois primeiros dígitos de **x** em hexadecimal serão atribuído a `T
 
 Substituindo o valor do tempo na fórmula:
 
-\[ x = 65536 - \frac{1000000}{0,5 \times 32} \]
-
-Calculando o divisor:
-
-\[ 0,5 \times 32 = 16 \]
-
-Substituindo o divisor na fórmula:
-
-\[ x = 65536 - \frac{1000000}{16} \]
-
-\[ x = 65536 - 62500 \]
-
-\[ x = 3036 \]
+$$
+x = 65536 - \frac{1000000}{0.5 \times 32}
+$$
 
 ##### Resultado para 1 segundo:
-\[ x = 3036 \]
+$$
+x = 3036
+$$
 
 Em **hexadecimal**:
 
-\[ x = 0x0BDC \]
+$$
+x = 0x0BDC
+$$
 
-Portanto `TimerHigh`será equivalente a `0B` e a `TimerLow` será atribuído `DC`.
+Portanto, `TimerHigh` será equivalente a `0B` e `TimerLow` será atribuído `DC`.
 
-#### 2. Cálculo para 0,25 segundos (250000 us)
+---
+
+#### Cálculo para 0,25 segundos (250000 us)
 
 Substituindo o valor do tempo na fórmula:
 
-\[ x = 65536 - \frac{250000}{0,5 \times 32} \]
-
-Calculando o divisor:
-
-\[ 0,5 \times 32 = 16 \]
-
-Substituindo o divisor na fórmula:
-
-\[ x = 65536 - \frac{250000}{16} \]
-
-\[ x = 65536 - 15625 \]
-
-\[ x = 49911 \]
+$$
+x = 65536 - \frac{250000}{0.5 \times 32}
+$$
 
 ##### Resultado para 0,25 segundos:
-\[ x = 49911 \]
+$$
+x = 49911
+$$
 
 Em **hexadecimal**:
 
-\[ x = 0xC2B7 \]
+$$
+x = 0xC2B7
+$$
 
-Portanto `TimerHigh`será equivalente a `C2` e a `TimerLow` será atribuído `B7`.
+Portanto, `TimerHigh` será equivalente a `C2` e `TimerLow` será atribuído `B7`.
+
 
 ---
 
