@@ -212,7 +212,9 @@ O circuito foi montado no **SimulIDE** de acordo com a figura abaixo, com as res
 
 O vídeo abaixo demonstra o funcionamento do circuito no software **SimulIDE**, apresentando os diferentes modos de operação de acordo com o pressionamento dos botões, alterando o período do cronômetro com 1 segundo ou 0,25 segundos.
 
-![Circuito Funcionando](assets/display.gif)
+<p align="center">
+  <img width="460" height="300" src="assets/display.gif" alt="Circuito operando">
+</p>
 
 ---
 
