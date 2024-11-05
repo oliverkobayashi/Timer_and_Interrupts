@@ -8,6 +8,8 @@
 
 Este repositório contém o projeto para a disciplina de **Aplicação de Microprocessadores (SEL0614)**, no qual será desenvolvido um cronômetro digital utilizando o microcontrolador *PIC18F4550* programado em linguagem **C**.
 
+---
+
 ## Visão Geral do Projeto
 Este projeto busca desenvolver um cronômetro digital usando o microcontrolador *PIC18F4550*, programado em **C**. A ideia é fazer com que um display de 7 segmentos conte de 0 a 9 em *loop*, alterando o período de contagem (1 segundo ou 0,25 segundos) ao pressionar botões específicos. Para isso, serão utilizados temporizadores e interrupções para gerenciar a contagem de tempo e a interação com os botões. O projeto será implementado no compilador **MikroC PRO** for *PIC* e testado no **SimulIDE**, comparando essa abordagem em **C** com uma implementação anterior feita em Assembly para explorar as vantagens e desafios de cada método.
 
@@ -16,6 +18,7 @@ A prática explora diversos conceitos de sistemas embarcados, como temporizaçã
 
 A configuração do **Timer0** inclui a definição do prescaler e a ativação das interrupções globais e específicas do periférico. O acionamento do display de 7 segmentos, ligado à porta **D**, é controlado por meio da varredura dos pinos, assegurando que cada número de 0 a 9 seja exibido corretamente.
 
+---
 
 ## Explicação do código
 
@@ -81,6 +84,78 @@ void ConfiguraInterrupcoes() {
 A função `ConfiguraInterrupcoes` é crucial para a configuração das interrupções do microcontrolador. `RCON.IPEN = 1;` ativa o sistema de prioridades de interrupção, permitindo uma distinção entre interrupções de alta e baixa prioridade. `INTCON.GIEH = 1;` e `INTCON.GIEL = 1;` habilitam interrupções de alta e baixa prioridade, respectivamente. As flags de interrupção de `Timer0`, `INT0`, e `INT1` são limpas com `INTCON.TMR0IF = 0;`, `INTCON.INT0IF = 0;`, e `INTCON.INT1IF = 0;`, para evitar a ativação aci...
 
 ### Rotina de interrupção de alta prioridade (`INTERRUPT_HIGH`)
+
+Para calcular os valores de `TimerHigh` e `TimerLow`, é utilizada a seguinte equação:
+
+\[ x = 65536 - \frac{\text{Perído (us)}}{0,5 \times 32} \]
+
+Em que os dois primeiros dígitos de **x** em hexadecimal serão atribuído a `TimerHigh` e os dois últimos dígitos atribuídos a `TimerLow`, com o período do cronômetro como variável da equação.
+
+---
+
+#### Cálculo para 1 segundo (1000000 us)
+
+Substituindo o valor do tempo na fórmula:
+
+\[ x = 65536 - \frac{1000000}{0,5 \times 32} \]
+
+Calculando o divisor:
+
+\[ 0,5 \times 32 = 16 \]
+
+Substituindo o divisor na fórmula:
+
+\[ x = 65536 - \frac{1000000}{16} \]
+
+\[ x = 65536 - 62500 \]
+
+\[ x = 3036 \]
+
+##### Resultado para 1 segundo:
+\[ x = 3036 \]
+
+Em **hexadecimal**:
+
+\[ x = 0x0BDC \]
+
+Portanto `TimerHigh`será equivalente a `0B` e a `TimerLow` será atribuído `DC`.
+
+#### 2. Cálculo para 0,25 segundos (250000 us)
+
+Substituindo o valor do tempo na fórmula:
+
+\[ x = 65536 - \frac{250000}{0,5 \times 32} \]
+
+Calculando o divisor:
+
+\[ 0,5 \times 32 = 16 \]
+
+Substituindo o divisor na fórmula:
+
+\[ x = 65536 - \frac{250000}{16} \]
+
+\[ x = 65536 - 15625 \]
+
+\[ x = 49911 \]
+
+##### Resultado para 0,25 segundos:
+\[ x = 49911 \]
+
+Em **hexadecimal**:
+
+\[ x = 0xC2B7 \]
+
+Portanto `TimerHigh`será equivalente a `C2` e a `TimerLow` será atribuído `B7`.
+
+---
+
+## Explicação dos Termos
+
+- **65536**: Um valor constante usado na fórmula, que representa o valor máximo para um contador de 16 bits.
+- **tempo em us**: O tempo em microsegundos.
+- **0,5 \times 32**: Uma constante de divisor para ajustar a unidade do tempo de acordo com a equação.
+
+
 ```C
 void INTERRUPT_HIGH() iv 0x0008 ics ICS_AUTO {
   if (INTCON.TMR0IF) {                  // Timer0
@@ -133,6 +208,8 @@ void main() {
 
 A função `main` é o ponto de entrada do programa e inicializa a execução. Primeiro, `ConfigurarMCU` é chamada para configurar o microcontrolador. A instrução `T0CON = 0b00000100;` define o `Timer0` com um prescaler de 1:32, ajustando o tempo de contagem. A função `ConfiguraInterrupcoes` é então chamada para habilitar as interrupções e configurá-las conforme necessário. O loop `while (1)` mantém o programa em execução contínua, esperando por interrupções que serão tratadas pelas rotinas associadas.
 
+---
+
 ## O circuito
 
 O circuito foi montado no **SimulIDE** de acordo com a figura abaixo, com as resistências para haver um controle da corrente e prevenir possível 'queimas' de componentes em um cenário de montagem do circuito físico.
@@ -144,6 +221,8 @@ O circuito foi montado no **SimulIDE** de acordo com a figura abaixo, com as res
 O vídeo abaixo demonstra o funcionamento do circuito no software **SimulIDE**, apresentando os diferentes modos de operação de acordo com o pressionamento dos botões, alterando o período do cronômetro com 1 segundo ou 0,25 segundos.
 
 ![Circuito Funcionando](assets/display.gif)
+
+---
 
 ## Comparação com o Projeto em Assembly para o 8051
 No projeto anterior, que usava Assembly para o microcontrolador *8051*, a programação envolvia maior detalhamento no controle de registradores e sub-rotinas. O código em Assembly exigia que o desenvolvedor gerenciasse manualmente cada aspecto das operações de delay, verificações de botão e manipulação de bits para o acionamento do display. Embora esse nível de controle permitisse uma compreensão aprofundada do funcionamento do hardware, ele tornava o desenvolvimento mais trabalhoso e sujeito a erros.
