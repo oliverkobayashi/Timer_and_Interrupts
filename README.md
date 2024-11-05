@@ -132,11 +132,10 @@ $$
 Em **hexadecimal**:
 
 $$
-x = 0xC2B7
+x = 0xC2F7
 $$
 
-Portanto, `TimerHigh` será equivalente a `C2` e `TimerLow` será atribuído `B7`.
-
+Portanto, `TimerHigh` será equivalente a `C2` e `TimerLow` será atribuído `F7`.
 
 ---
 
