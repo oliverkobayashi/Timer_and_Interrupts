@@ -56,32 +56,36 @@ void INTERRUPT_HIGH() iv 0x0008 ics ICS_AUTO {
   if (INTCON.TMR0IF) {                  // Timer0
     contador = (contador + 1) % 10;     // Incrementa e reinicia ao alcançar 10
     exibirNumero(contador);             // Atualiza o display com o valor do contador
-    // Reinicializa o Timer0
+    // Reinicia o Timer0
     T0CON.TMR0ON = 0;
     TMR0H = TimerHigh;
     TMR0L = TimerLow;
-    T0CON.TMR0ON = 1;
-    INTCON.TMR0IF = 0;      // Limpa a flag de interrupção do Timer0
+    T0CON.TMR0ON = 1;       // Reativa o Timer
+    INTCON.TMR0IF = 0;      // Limpa a flag do Timer0
   }
-
-  if (INTCON.INT0IF) {      // Botão RB0 (INT0)
-    TimerHigh = 0x0B;       // Ajusta Timer0 para 1 segundo
+  // Verifica a interrupção de RB0
+  if (INTCON.INT0IF) {
+    // Ajusta Timer0 para 1 segundo
+    TimerHigh = 0x0B;       
     TimerLow = 0xDC;
+    // Reinicia o Timer0
     T0CON.TMR0ON = 0;
     TMR0H = TimerHigh;
     TMR0L = TimerLow;
     T0CON.TMR0ON = 1;
-    INTCON.INT0IF = 0;      // Limpa a flag de interrupção INT0
+    INTCON.INT0IF = 0;
   }
-
-  if (INTCON3.INT1IF) {     // Botão RB1 (INT1)
-    TimerHigh = 0xC2;       // Ajusta Timer0 para 0.25 segundo
+  // Verifica a interrupção de RB0
+  if (INTCON3.INT1IF) {
+    // Ajusta Timer0 para 0,25 segundo
+    TimerHigh = 0xC2;       
     TimerLow = 0xF7;
+    // Reinicia o Timer0
     T0CON.TMR0ON = 0;
     TMR0H = TimerHigh;
     TMR0L = TimerLow;
     T0CON.TMR0ON = 1;
-    INTCON3.INT1IF = 0;     // Limpa a flag de interrupção INT1
+    INTCON3.INT1IF = 0;
   }
 }
 
