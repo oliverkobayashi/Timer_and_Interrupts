@@ -87,7 +87,9 @@ A função `ConfiguraInterrupcoes` é crucial para a configuração das interrup
 
 Para calcular os valores de `TimerHigh` e `TimerLow`, é utilizada a seguinte equação:
 
-\[ x = 65536 - \frac{\text{Perído (us)}}{0,5 \times 32} \]
+$$
+x = 65536 - \frac{\text{Perído (us)}}{0,5 \times 32}
+$$
 
 Em que os dois primeiros dígitos de **x** em hexadecimal serão atribuído a `TimerHigh` e os dois últimos dígitos atribuídos a `TimerLow`, com o período do cronômetro como variável da equação.
 
