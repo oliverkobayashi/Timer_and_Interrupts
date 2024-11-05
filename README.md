@@ -17,7 +17,7 @@ A prática explora diversos conceitos de sistemas embarcados, como temporizaçã
 A configuração do **Timer0** inclui a definição do prescaler e a ativação das interrupções globais e específicas do periférico. O acionamento do display de 7 segmentos, ligado à porta **D**, é controlado por meio da varredura dos pinos, assegurando que cada número de 0 a 9 seja exibido corretamente.
 
 
-## Comentários Explicativos do Código
+## Explicação do código
 
 ### Configuração inicial do microcontrolador (`ConfigurarMCU`)
 ```C
@@ -33,14 +33,7 @@ void ConfigurarMCU() {
 }
 ```
 
-- `ADCON1 |= 0x0F;`: Configura todos os pinos do microcontrolador como digitais.
-- `INTCON2.RBPU = 0;`: Desativa o resistor pull-up global.
-- `TRISD = 0;`: Define o `PORTD` como saída.
-- `PORTD = 0;`: Inicializa `PORTD` com valor 0.
-- `TRISB.RB0 = 1;`: Configura o pino `RB0` como entrada.
-- `TRISB.RB1 = 1;`: Configura o pino `RB1` como entrada.
-- `PORTB.RB0 = 1;`: Define o estado inicial alto para o pino `RB0`.
-- `PORTB.RB1 = 1;`: Define o estado inicial alto para o pino `RB1`.
+A função `ConfigurarMCU` é responsável pela configuração inicial dos pinos do microcontrolador. A instrução `ADCON1 |= 0x0F;` garante que todos os pinos sejam configurados como digitais, desativando funcionalidades analógicas. `INTCON2.RBPU = 0;` desativa o resistor pull-up global, o que permite que entradas externas controladas possam ser usadas. `TRISD = 0;` define o `PORTD` como saída, e `PORTD = 0;` inicializa esse porto com valor 0, apagando quaisquer sinais. Os pinos `RB0` e `RB1` são configurados c...
 
 ### Exibição do display de 7 segmentos (`exibirNumero`)
 ```C
@@ -64,11 +57,7 @@ void exibirNumero(int numero) {
 }
 ```
 
-- A função recebe um número de 0 a 9 e define os segmentos correspondentes no `PORTD` para exibi-lo no display.
-- Se o número estiver fora do intervalo (menor que 0 ou maior que 9), a função desliga os segmentos (`LATD = 0x00;`).
-
-### Casos do `switch`:
-- Cada caso define o valor de `LATD` para acender os segmentos corretos e exibir o número desejado no display.
+A função `exibirNumero` é projetada para controlar um display de 7 segmentos, exibindo números de 0 a 9. Se o número passado estiver fora do intervalo válido, a instrução `LATD = 0x00;` apaga todos os segmentos do display. Utilizando uma estrutura `switch`, cada número de 0 a 9 é mapeado para os bits de `LATD` correspondentes, que acendem os segmentos apropriados do display para formar o número desejado.
 
 ### Configuração das interrupções (`ConfiguraInterrupcoes`)
 ```C
@@ -89,16 +78,7 @@ void ConfiguraInterrupcoes() {
 }
 ```
 
-- `RCON.IPEN = 1;`: Ativa o sistema de prioridades de interrupção.
-- `INTCON.GIEH = 1;`: Habilita interrupções de alta prioridade.
-- `INTCON.GIEL = 1;`: Habilita interrupções de baixa prioridade.
-- `INTCON.TMR0IF = 0;`: Limpa a flag de interrupção do `Timer0`.
-- `INTCON.TMR0IE = 1;`: Habilita interrupção do `Timer0`.
-- `INTCON2.TMR0IP = 1;`: Define alta prioridade para `Timer0`.
-- `INTCON.INT0IF = 0;`, `INTCON.INT1IF = 0;`: Limpam as flags de interrupção `INT0` e `INT1`.
-- `INTCON.INT0IE = 1;`, `INTCON3.INT1IE = 1;`: Habilitam as interrupções externas em `RB0` (INT0) e `RB1` (INT1).
-- `INTCON3.INT1IP = 1;`: Define alta prioridade para `INT1`.
-- `INTCON2.INTEDG0 = 1;`, `INTCON2.INTEDG1 = 1;`: Configuram interrupções para a borda de subida.
+A função `ConfiguraInterrupcoes` é crucial para a configuração das interrupções do microcontrolador. `RCON.IPEN = 1;` ativa o sistema de prioridades de interrupção, permitindo uma distinção entre interrupções de alta e baixa prioridade. `INTCON.GIEH = 1;` e `INTCON.GIEL = 1;` habilitam interrupções de alta e baixa prioridade, respectivamente. As flags de interrupção de `Timer0`, `INT0`, e `INT1` são limpas com `INTCON.TMR0IF = 0;`, `INTCON.INT0IF = 0;`, e `INTCON.INT1IF = 0;`, para evitar a ativação aci...
 
 ### Rotina de interrupção de alta prioridade (`INTERRUPT_HIGH`)
 ```C
@@ -136,17 +116,9 @@ void INTERRUPT_HIGH() iv 0x0008 ics ICS_AUTO {
 }
 ```
 
-- Variáveis globais `TimerHigh`, `TimerLow` e `contador` são usadas para controle do tempo e contagem.
-- `if (INTCON.TMR0IF)`: Verifica se a interrupção do `Timer0` ocorreu.
-  - Incrementa `contador` e reinicia ao alcançar 10 (`contador = (contador + 1) % 10;`).
-  - Atualiza o display com o novo valor.
-  - Reinicializa o `Timer0` com `TimerHigh` e `TimerLow` e limpa a flag de interrupção.
+A rotina de interrupção `INTERRUPT_HIGH` é projetada para lidar com interrupções de alta prioridade. Quando a flag `INTCON.TMR0IF` é detectada, indicando uma interrupção do `Timer0`, o contador é incrementado e reiniciado ao atingir 10. A função `exibirNumero` é chamada para atualizar o display com o valor atual do contador. O `Timer0` é então reinicializado com os valores `TimerHigh` e `TimerLow`. Se a flag de `INT0` for acionada (associada ao botão `RB0`), os registros do `Timer0` são configurados para ...
 
-#### Verificação de botões (`INT0IF` e `INT1IF`)
-- `if (INTCON.INT0IF)`: Quando o botão `RB0` é pressionado, ajusta o `Timer0` para contar 1 segundo.
-- `if (INTCON3.INT1IF)`: Quando o botão `RB1` é pressionado, ajusta o `Timer0` para contar 0.25 segundo.
-
-### `main()`
+### Função principal (`main`)
 ```C
 void main() {
   ConfigurarMCU();          // Inicializa o microcontrolador
@@ -158,6 +130,8 @@ void main() {
   }
 }
 ```
+
+A função `main` é o ponto de entrada do programa e inicializa a execução. Primeiro, `ConfigurarMCU` é chamada para configurar o microcontrolador. A instrução `T0CON = 0b00000100;` define o `Timer0` com um prescaler de 1:32, ajustando o tempo de contagem. A função `ConfiguraInterrupcoes` é então chamada para habilitar as interrupções e configurá-las conforme necessário. O loop `while (1)` mantém o programa em execução contínua, esperando por interrupções que serão tratadas pelas rotinas associadas.
 
 ## O circuito
 
