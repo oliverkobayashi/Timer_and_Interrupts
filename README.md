@@ -16,6 +16,56 @@ A prática explora diversos conceitos de sistemas embarcados, como temporizaçã
 
 A configuração do **Timer0** inclui a definição do prescaler e a ativação das interrupções globais e específicas do periférico. O acionamento do display de 7 segmentos, ligado à porta **D**, é controlado por meio da varredura dos pinos, assegurando que cada número de 0 a 9 seja exibido corretamente.
 
+
+## Comentários Explicativos do Código
+
+### Configuração inicial do microcontrolador (`ConfigurarMCU`)
+- `ADCON1 |= 0x0F;`: Configura todos os pinos do microcontrolador como digitais.
+- `INTCON2.RBPU = 0;`: Desativa o resistor pull-up global.
+- `TRISD = 0;`: Define o `PORTD` como saída.
+- `PORTD = 0;`: Inicializa `PORTD` com valor 0.
+- `TRISB.RB0 = 1;`: Configura o pino `RB0` como entrada.
+- `TRISB.RB1 = 1;`: Configura o pino `RB1` como entrada.
+- `PORTB.RB0 = 1;`: Define o estado inicial alto para o pino `RB0`.
+- `PORTB.RB1 = 1;`: Define o estado inicial alto para o pino `RB1`.
+
+### Exibição do display de 7 segmentos (`exibirNumero`)
+- A função recebe um número de 0 a 9 e define os segmentos correspondentes no `PORTD` para exibi-lo no display.
+- Se o número estiver fora do intervalo (menor que 0 ou maior que 9), a função desliga os segmentos (`LATD = 0x00;`).
+
+#### Casos do `switch`:
+- Cada caso define o valor de `LATD` para acender os segmentos corretos e exibir o número desejado no display.
+
+### Configuração das interrupções (`ConfiguraInterrupcoes`)
+- `RCON.IPEN = 1;`: Ativa o sistema de prioridades de interrupção.
+- `INTCON.GIEH = 1;`: Habilita interrupções de alta prioridade.
+- `INTCON.GIEL = 1;`: Habilita interrupções de baixa prioridade.
+- `INTCON.TMR0IF = 0;`: Limpa a flag de interrupção do `Timer0`.
+- `INTCON.TMR0IE = 1;`: Habilita interrupção do `Timer0`.
+- `INTCON2.TMR0IP = 1;`: Define alta prioridade para `Timer0`.
+- `INTCON.INT0IF = 0;`, `INTCON.INT1IF = 0;`: Limpam as flags de interrupção `INT0` e `INT1`.
+- `INTCON.INT0IE = 1;`, `INTCON3.INT1IE = 1;`: Habilitam as interrupções externas em `RB0` (INT0) e `RB1` (INT1).
+- `INTCON3.INT1IP = 1;`: Define alta prioridade para `INT1`.
+- `INTCON2.INTEDG0 = 1;`, `INTCON2.INTEDG1 = 1;`: Configuram interrupções para a borda de subida.
+
+### Rotina de interrupção de alta prioridade (`INTERRUPT_HIGH`)
+- Variáveis globais `TimerHigh`, `TimerLow` e `contador` são usadas para controle do tempo e contagem.
+- `if (INTCON.TMR0IF)`: Verifica se a interrupção do `Timer0` ocorreu.
+  - Incrementa `contador` e reinicia ao alcançar 10 (`contador = (contador + 1) % 10;`).
+  - Atualiza o display com o novo valor.
+  - Reinicializa o `Timer0` com `TimerHigh` e `TimerLow` e limpa a flag de interrupção.
+
+#### Verificação de botões (`INT0IF` e `INT1IF`)
+- `if (INTCON.INT0IF)`: Quando o botão `RB0` é pressionado, ajusta o `Timer0` para contar 1 segundo.
+- `if (INTCON3.INT1IF)`: Quando o botão `RB1` é pressionado, ajusta o `Timer0` para contar 0.25 segundo.
+
+### `main()`
+- Chama `ConfigurarMCU()` para a configuração inicial.
+- Configura o `Timer0` com prescaler de 1:32 (`T0CON = 0b00000100;`).
+- Habilita interrupções com `ConfiguraInterrupcoes()`.
+- Loop principal (`while (1)`) mantém o programa em execução contínua.
+
+
 ## O circuito
 
 O circuito foi montado no **SimulIDE** de acordo com a figura abaixo, com as resistências para haver um controle da corrente e prevenir possível 'queimas' de componentes em um cenário de montagem do circuito físico.
