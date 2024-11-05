@@ -145,7 +145,7 @@ Portanto, `TimerHigh` será equivalente a `C2` e `TimerLow` será atribuído `F7
 
 - **65536**: Um valor constante usado na fórmula, que representa o valor máximo para um contador de 16 bits.
 - **tempo em us**: O tempo em microsegundos.
-- **0,5 \times 32**: Uma constante de divisor para ajustar a unidade do tempo de acordo com a equação.
+- **0,5 \* 32**: Uma constante de divisor para ajustar a unidade do tempo de acordo com a equação.
 
 
 ```C
